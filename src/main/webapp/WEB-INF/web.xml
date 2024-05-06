@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd"
+         version="5.0">
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>User Management</web-resource-name>
+            <url-pattern>/secured/user/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>ADMIN</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Category Management</web-resource-name>
+            <url-pattern>/secured/category/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>ADMIN</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>Question Management</web-resource-name>
+            <url-pattern>/secured/question/*</url-pattern>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>ADMIN</role-name>
+            <role-name>GENERAL</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <security-role>
+        <role-name>ADMIN</role-name>
+    </security-role>
+    <security-role>
+        <role-name>GENERAL</role-name>
+    </security-role>
+
+    <context-param>
+        <param-name>
+            jakarta.faces.AUTOMATIC_EXTENSIONLESS_MAPPING
+        </param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <!-- Bind null instead of empty string -->
+    <context-param>
+        <param-name>
+            jakarta.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL
+        </param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>org.omnifaces.FACES_VIEWS_SCAN_PATHS</param-name>
+        <param-value>/*.xhtml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>primefaces.THEME</param-name>
+        <param-value>saga</param-value>
+    </context-param>
+
+    <welcome-file-list>
+        <welcome-file>index.xhtml</welcome-file>
+    </welcome-file-list>
+</web-app>

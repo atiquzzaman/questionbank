@@ -1,0 +1,53 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/layout/page-template.xhtml">
+    <ui:define name="content-title">#{userView.user.id > 0 ? 'Update' : 'Create New '} User</ui:define>
+    <f:metadata>
+        <f:viewParam name="userId" value="#{userView.userId}"/>
+        <f:viewAction action="#{userView.loadUserForm()}"/>
+    </f:metadata>
+
+    <ui:define name="page-content">
+        <p:outputPanel>
+            <h:form id="userForm">
+                <p:card>
+                    <div class="field">
+                        <p:outputLabel for="name" styleClass="block">Name</p:outputLabel>
+                        <p:inputText id="name" styleClass="block" value="#{userView.user.name}"/>
+                        <h:message for="name" styleClass="block field-error"/>
+                    </div>
+                    <div class="field">
+                        <p:outputLabel for="email" styleClass="block">Email</p:outputLabel>
+                        <p:inputText id="email" styleClass="block" value="#{userView.user.email}" type="email"/>
+                        <h:message for="email" styleClass="block field-error"/>
+                    </div>
+                    <div class="field">
+                        <p:outputLabel styleClass="block">User Type</p:outputLabel>
+                        <p:selectOneRadio styleClass="block" value="#{userView.user.type}" layout="lineDirection">
+                            <f:selectItem itemLabel="Admin" itemValue="#{UserType.ADMIN}"/>
+                            <f:selectItem itemLabel="General" itemValue="#{UserType.GENERAL}"/>
+                        </p:selectOneRadio>
+                    </div>
+                </p:card>
+                <p:outputPanel id="actions" styleClass="mt-3 flex flex-row justify-content-between">
+                    <div>
+                        <p:commandButton styleClass="ui-button-outlined ui-button-secondary" value="Cancel" ajax="false"/>
+                    </div>
+                    <div class="flex gap-2">
+                        <p:commandButton styleClass="#{userView.user.active ? 'ui-button-danger' : 'ui-button-secondary'}"
+                                         value="#{userView.user.active ? 'Deactivate' : 'Activate'}"
+                                         action="#{userView.toggleActivation()}"
+                                         rendered="#{userView.user.id > 0}"
+                                         update="userForm:actions, growl"/>
+                        <p:commandButton value="#{userView.user.id > 0 ? 'Update' : 'Save'}"
+                                         action="#{userView.submit()}"
+                                         update="pageTitle userForm:actions growl"/>
+                    </div>
+                </p:outputPanel>
+            </h:form>
+        </p:outputPanel>
+    </ui:define>
+</ui:composition>

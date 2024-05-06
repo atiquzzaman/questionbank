@@ -1,0 +1,122 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/layout/page-template.xhtml">
+    <ui:define name="content-title">Review Question</ui:define>
+    <f:metadata>
+        <f:viewParam name="questionId" value="#{questionView.questionId}"/>
+        <f:viewAction action="#{questionView.loadQuestionForReview()}"/>
+    </f:metadata>
+
+    <ui:define name="page-content">
+            <h:form id="questionForm">
+                <p:outputPanel styleClass="flex flex-row gap-2">
+                    <p:outputPanel styleClass="flex-1">
+                        <p:outputPanel styleClass="min-h-full">
+                            <div>
+                                <p:outputPanel styleClass="font-medium text-gray-600">Problem</p:outputPanel>
+                                <p:outputPanel>
+                                    <h:outputText value="#{questionView.question.problem}" escape="false"/>
+                                </p:outputPanel>
+                            </div>
+
+                            <div>
+                                <p:outputPanel styleClass="font-medium text-gray-600">Solution</p:outputPanel>
+                                <p:outputPanel>
+                                    <h:outputText value="#{questionView.question.solution}" escape="false"/>
+                                </p:outputPanel>
+                            </div>
+                        </p:outputPanel>
+                        <p:divider />
+                        <p:outputPanel id="actions" styleClass="mt-3 flex flex-row justify-content-between">
+                            <div>
+                                <p:commandButton styleClass="ui-button-outlined ui-button-secondary" value="Cancel" ajax="false"/>
+                            </div>
+                            <div class="flex flex-row gap-3">
+                                <p:commandButton styleClass="#{questionView.question.approvalStatus != ApprovalStatus.APPROVED ? 'ui-button-success' : 'ui-button-danger'}"
+                                                 icon="pi #{questionView.question.approvalStatus != ApprovalStatus.APPROVED ? 'pi-check' : 'pi-times'}"
+                                                 value="#{questionView.question.approvalStatus != ApprovalStatus.APPROVED ? 'Approve' : 'Disapprove'}"
+                                                 action="#{questionView.submitFinalApproval()}"
+                                                 update="questionForm:status questionForm:actions growl"
+                                                 rendered="#{authorizer.admin}"/>
+                                <p:commandButton styleClass="#{questionView.reviewerDecision.approvalStatus != ApprovalStatus.APPROVED ? 'ui-button-success' : 'ui-button-danger'}"
+                                                 icon="pi #{questionView.reviewerDecision.approvalStatus != ApprovalStatus.APPROVED ? 'pi-check' : 'pi-times'}"
+                                                 value="#{!authorizer.admin and questionView.reviewerDecision.approvalStatus != ApprovalStatus.APPROVED ? 'Approve' : 'Disapprove'}"
+                                                 action="#{questionView.submitReviewerDecision()}"
+                                                 update="questionForm:status questionForm:actions growl"
+                                                 rendered="#{!authorizer.admin and questionView.reviewerDecision != null and questionView.question.approvalStatus == ApprovalStatus.UNDECIDED}"/>
+                                <p:commandButton id="dynaButton" type="button" icon="pi pi-ellipsis-v"
+                                                 styleClass="ui-button-flat ui-button-secondary"
+                                                 rendered="#{authorizer.admin}"/>
+                                <p:menu overlay="true" trigger="dynaButton" my="left top" at="left bottom">
+                                    <p:menuitem value="#{questionView.question.active ? 'Deactivate' : 'Activate'}"
+                                                update="questionForm:status questionForm:actions growl"
+                                                action="#{questionView.toggleActivation()}"/>
+                                </p:menu>
+                            </div>
+                        </p:outputPanel>
+                    </p:outputPanel>
+                    <p:outputPanel id="status" styleClass="w-4">
+                        <p:outputPanel styleClass="block font-medium text-sm text-gray-600 mb-2">Category</p:outputPanel>
+                        <p:outputLabel value="#{questionView.question.category.name}"/>
+                        <p:divider />
+                        <p:outputPanel styleClass="block font-medium text-sm text-gray-600 mb-2">Level</p:outputPanel>
+                        <p:chip label="Expert" styleClass="font-medium text-xs bg-purple-600 text-white"
+                                value="#{questionView.question.level}"
+                                rendered="#{questionView.question.level == Level.EXPERT}"/>
+                        <p:chip label="Senior" styleClass="font-medium text-xs bg-indigo-600 text-white"
+                                rendered="#{questionView.question.level == Level.SENIOR}"/>
+                        <p:chip label="Beginner" styleClass="font-medium text-xs bg-cyan-600 text-white"
+                                rendered="#{questionView.question.level == Level.BEGINNER}"/>
+                        <p:divider />
+                        <h:panelGroup rendered="#{questionView.reviewerDecision != null}">
+                            <p:outputPanel styleClass="block font-medium text-sm text-gray-600 mb-2">My Decision</p:outputPanel>
+                            <p:chip label="Approved" styleClass="font-medium text-xs bg-green-600 text-white"
+                                    rendered="#{questionView.reviewerDecision.approvalStatus == ApprovalStatus.APPROVED}"/>
+                            <p:chip label="Disapproved" styleClass="font-medium text-xs bg-red-600 text-white"
+                                    rendered="#{questionView.reviewerDecision.approvalStatus == ApprovalStatus.DISAPPROVED}"/>
+                            <p:chip label="Undecided" styleClass="font-medium text-xs bg-yellow-600 text-white"
+                                    rendered="#{questionView.reviewerDecision.approvalStatus == ApprovalStatus.UNDECIDED}"/>
+                            <p:divider />
+                        </h:panelGroup>
+                        <p:outputPanel styleClass="block font-medium text-sm text-gray-600 mb-2">Final Decision</p:outputPanel>
+                        <p:chip label="Approved" styleClass="font-medium text-xs bg-green-600 text-white"
+                                rendered="#{questionView.question.approvalStatus == ApprovalStatus.APPROVED}"/>
+                        <p:chip label="Disapproved" styleClass="font-medium text-xs bg-red-600 text-white"
+                                rendered="#{questionView.question.approvalStatus == ApprovalStatus.DISAPPROVED}"/>
+                        <p:chip label="Undecided" styleClass="font-medium text-xs bg-yellow-600 text-white"
+                                rendered="#{questionView.question.approvalStatus == ApprovalStatus.UNDECIDED}"/>
+                        <p:divider />
+                        <p:outputPanel styleClass="block font-medium text-sm text-gray-600 mb-2">Question Status</p:outputPanel>
+                        <p:chip label="Active" styleClass="font-medium text-xs bg-green-600 text-white"
+                                rendered="#{questionView.question.active}"/>
+                        <p:chip label="Inactive" styleClass="font-medium text-xs bg-red-600 text-white"
+                                rendered="#{!questionView.question.active}"/>
+                        <p:divider />
+                        <p:outputPanel styleClass="block font-medium text-sm text-gray-600 mb-2">Contributor</p:outputPanel>
+                        <p:outputLabel value="#{questionView.question.createdBy.name}"/>
+                        <h:panelGroup rendered="#{authorizer.admin}">
+                            <p:divider />
+                            <p:outputPanel styleClass="block font-medium text-sm text-gray-600 mb-2">Reviewers</p:outputPanel>
+                            <ul class="list-none p-0 m-0">
+                                <ui:repeat value="#{questionView.question.reviewerDecisions}" var="rd">
+                                    <li class="flex flex-row justify-content-between mb-2">
+                                        <p:outputLabel value="#{rd.reviewer.name}"
+                                                       styleClass="font-medium text-sm"/>
+                                        <h:outputText styleClass="font-bold text-xs pi pi-check text-green-600"
+                                                      rendered="#{rd.approvalStatus == ApprovalStatus.APPROVED}"/>
+                                        <h:outputText styleClass="font-bold text-xs pi pi-times text-red-600"
+                                                      rendered="#{rd.approvalStatus == ApprovalStatus.DISAPPROVED}"/>
+                                        <h:outputText styleClass="font-bold text-xs pi pi-circle-fill text-yellow-600"
+                                                      rendered="#{rd.approvalStatus == ApprovalStatus.UNDECIDED}"/>
+                                    </li>
+                                </ui:repeat>
+                            </ul>
+                        </h:panelGroup>
+                    </p:outputPanel>
+                </p:outputPanel>
+            </h:form>
+    </ui:define>
+</ui:composition>
