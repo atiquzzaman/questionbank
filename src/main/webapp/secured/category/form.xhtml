@@ -1,0 +1,169 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/layout/page-template.xhtml">
+    <ui:define name="content-title">#{categoryView.category.id > 0 ? 'Update' : 'Create New '} Category</ui:define>
+    <f:metadata>
+        <f:viewParam name="categoryId" value="#{categoryView.categoryId}"/>
+        <f:viewAction action="#{categoryView.loadCategoryForm()}"/>
+    </f:metadata>
+
+    <ui:define name="page-content">
+        <p:outputPanel>
+            <h:form id="categoryForm">
+                <p:card>
+                    <div class="field">
+                        <p:outputLabel for="name" styleClass="block">Name</p:outputLabel>
+                        <p:inputText id="name" size="50" styleClass="block" value="#{categoryView.category.name}"/>
+                        <h:message for="name" styleClass="block field-error"/>
+                    </div>
+                    <div class="field">
+                        <p:outputLabel for="description" styleClass="block">Description</p:outputLabel>
+                        <p:inputText id="description" styleClass="block" size="50" value="#{categoryView.category.description}"/>
+                    </div>
+                </p:card>
+
+                <p:card styleClass="mt-3">
+                    <f:facet name="title">Contributors</f:facet>
+                    <p:outputPanel id="contributorPanel">
+                        <p:dataTable var="user" rows="5" widgetVar="contributorTable"
+                                     value="#{categoryView.category.contributors}"
+                                     paginator="true"
+                                     paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom"
+                                     globalFilterOnly="true"
+                                     emptyMessage="No contributor added">
+                            <f:facet name="header">
+                                <div class="flex align-items-center justify-content-between">
+                                    <p:inputText id="globalFilter"
+                                                 onkeyup="PF('contributorTable').filter()"
+                                                 placeholder="Enter any part of name or email"/>
+                                    <p:commandButton value="Add Contributor" styleClass="ui-button-secondary"
+                                                     immediate="true"
+                                                     action="#{categoryView.triggerDialogAssigningContributors()}"
+                                                     oncomplete="PF('unassignedUserListDialog').show()"
+                                                     update="categoryForm:dialogData"
+                                    />
+                                </div>
+
+                            </f:facet>
+                            <p:column headerText="Name" filterBy="#{user.name}" filterMatchMode="contains">
+                                <h:outputText value="#{user.name}" />
+                            </p:column>
+
+                            <p:column headerText="Email" filterBy="#{user.email}" filterMatchMode="contains">
+                                <h:outputText value="#{user.email}" />
+                            </p:column>
+
+                            <p:column styleClass="text-right">
+                                <p:commandButton action="#{categoryView.removeContributor(user)}"
+                                                 update="categoryForm:contributorPanel"
+                                                 icon="pi pi-trash" styleClass="ui-button-flat ui-button-danger" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </p:card>
+
+                <p:card styleClass="mt-3">
+                    <f:facet name="title">Reviewers</f:facet>
+                    <p:outputPanel id="reviewerPanel">
+                        <p:dataTable var="user" rows="5" widgetVar="reviewerTable"
+                                     value="#{categoryView.category.reviewers}"
+                                     globalFilterOnly="true"
+                                     emptyMessage="No reviewer added">
+                            <f:facet name="header">
+                                <div class="flex align-items-center justify-content-between">
+                                    <p:inputText id="globalFilter"
+                                                 onkeyup="PF('reviewerTable').filter()"
+                                                 placeholder="Enter any part of name or email"/>
+                                    <p:commandButton value="Add Reviewer" styleClass="ui-button-secondary"
+                                                     immediate="true"
+                                                     action="#{categoryView.triggerDialogAssigningReviewers()}"
+                                                     oncomplete="PF('unassignedUserListDialog').show()"
+                                                     update="categoryForm:dialogData"
+                                    />
+                                </div>
+
+                            </f:facet>
+                            <p:column headerText="Name" filterBy="#{user.name}" filterMatchMode="contains">
+                                <h:outputText value="#{user.name}" />
+                            </p:column>
+
+                            <p:column headerText="Email" filterBy="#{user.email}" filterMatchMode="contains">
+                                <h:outputText value="#{user.email}" />
+                            </p:column>
+
+                            <p:column styleClass="text-right">
+                                <p:commandButton action="#{categoryView.removeReviewer(user)}" update="categoryForm:reviewerPanel" icon="pi pi-trash" styleClass="ui-button-flat ui-button-danger" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </p:card>
+
+                <p:outputPanel id="actions" styleClass="mt-3 flex flex-row justify-content-between">
+                    <div>
+                        <p:commandButton styleClass="ui-button-outlined ui-button-secondary" value="Cancel" ajax="false"/>
+                    </div>
+                    <div class="flex gap-2">
+                        <p:commandButton styleClass="#{categoryView.category.active ? 'ui-button-danger' : 'ui-button-secondary'}"
+                                         value="#{categoryView.category.active ? 'Deactivate' : 'Activate'}"
+                                         action="#{categoryView.toggleActivation()}"
+                                         update="pageTitle categoryForm:actions growl"
+                                         rendered="#{categoryView.category.id > 0}"/>
+                        <p:commandButton value="#{categoryView.category.id > 0 ? 'Update' : 'Save'}"
+                                         action="#{categoryView.submit()}"
+                                         update="pageTitle categoryForm:actions growl"/>
+                    </div>
+                </p:outputPanel>
+
+                <p:dialog id="unassignedUserListDialog"
+                          widgetVar="unassignedUserListDialog"
+                          showEffect="fade" modal="true"
+                          draggable="false" blockScroll="true"
+                          fitViewport="true" width="700" height="400"
+                >
+                    <f:facet name="footer">
+                        <p:commandButton value="Close"
+                                         styleClass="ui-button-secondary"
+                                         onclick="PF('unassignedUserListDialog').hide()"/>
+                        <p:commandButton value="Add"
+                                         action="#{categoryView.addSelectedUsers}"
+                                         oncomplete="PF('unassignedUserListDialog').hide()"
+                                         immediate="true"
+                                         update="categoryForm:reviewerPanel, categoryForm:contributorPanel"/>
+                    </f:facet>
+                    <p:outputPanel id="dialogData" >
+                        <p:dataTable var="user" rows="5" widgetVar="unassignedUserDatatable"
+                                     value="#{categoryView.unassignedUserList}"
+                                     selection="#{categoryView.selectedUsers}"
+                                     rowKey="#{user.id}"
+                                     paginator="true"
+                                     paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom"
+                                     selectionPageOnly="false"
+                                     rowSelectMode="none"
+                                     globalFilterOnly="true"
+                                     emptyMessage="No user can be added">
+                            <f:facet name="header">
+                                <div class="flex align-items-center justify-content-between">
+                                    <p:inputText id="globalFilter" onkeyup="PF('unassignedUserDatatable').filter()"
+                                                 placeholder="Enter any part of name or email"/>
+                                </div>
+
+                            </f:facet>
+                            <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+                            <p:column headerText="Name" filterBy="#{user.name}" filterMatchMode="contains">
+                                <h:outputText value="#{user.name}" />
+                            </p:column>
+                            <p:column headerText="Email" filterBy="#{user.email}" filterMatchMode="contains">
+                                <h:outputText value="#{user.email}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </p:dialog>
+            </h:form>
+        </p:outputPanel>
+    </ui:define>
+</ui:composition>

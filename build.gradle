@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group 'com.questionbank'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    log4jVersion = '2.21.1'
+    junitVersion = '5.9.1'
+}
+
+sourceCompatibility = "14"
+targetCompatibility = "14"
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    compileOnly 'jakarta.platform:jakarta.jakartaee-web-api:10.0.0'
+    compileOnly 'org.eclipse.persistence:org.eclipse.persistence.jpa.modelgen.processor:4.0.2'
+
+    implementation 'org.eclipse.persistence:org.eclipse.persistence.jpa:4.0.2'
+    implementation 'org.primefaces:primefaces:13.0.8:jakarta'
+    implementation 'org.omnifaces:omnifaces:4.4'
+    implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+}
+
+test {
+    useJUnitPlatform()
+}

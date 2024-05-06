@@ -1,0 +1,89 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/layout/page-template.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{categoryView.loadUserLazyData()}"/>
+    </f:metadata>
+    <ui:define name="page-content">
+        <p:outputPanel>
+            <h:form id="categoryForm">
+                <p:outputPanel>
+                    <p:dataTable var="category" rows="15" lazy="true"
+                                 widgetVar="categoryDatatable"
+                                 value="#{categoryView.lazyDataModel}"
+                                 paginator="true"
+                                 paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom"
+                                 emptyMessage="No category found"
+                                 multiViewState="true">
+                        <p:column headerText="Category">
+                            <h:outputText value="#{category.name}" styleClass="font-bold block" />
+                            <h:outputText value="#{category.description}" styleClass="text-sm text-gray-600"/>
+                        </p:column>
+                        <p:column headerText="Contributors" styleClass="text-center" width="100">
+                            <p:commandLink value="#{category.contributors.size()}"
+                                           action="#{categoryView.selectCategoryUsers(category.contributors)}"
+                                           oncomplete="PF('userListDialog').show()"
+                                           update="categoryForm:dialogData"
+                            />
+                        </p:column>
+                        <p:column headerText="Reviewers" styleClass="text-center" width="100">
+                            <p:commandLink value="#{category.reviewers.size()}"
+                                           action="#{categoryView.selectCategoryUsers(category.reviewers)}"
+                                           oncomplete="PF('userListDialog').show()"
+                                           update="categoryForm:dialogData"
+                            />
+                        </p:column>
+                        <p:column>
+                            <p:link outcome="/secured/question/list" value="Review Questions">
+                                <f:param name="categoryId" value="#{category.id}"/>
+                            </p:link>
+                        </p:column>
+                        <p:column width="100">
+                            <p:link outcome="/secured/category/form" value="Edit">
+                                <f:param name="categoryId" value="#{category.id}"/>
+                            </p:link>
+                        </p:column>
+                    </p:dataTable>
+                </p:outputPanel>
+                <p:dialog id="userListDialog"
+                          widgetVar="userListDialog"
+                          showEffect="fade" modal="true"
+                          draggable="false" blockScroll="true"
+                          fitViewport="true" width="600" height="400"
+                >
+                    <f:facet name="footer">
+                        <p:commandButton value="Close"
+                                         styleClass="ui-button-secondary"
+                                         onclick="PF('userListDialog').hide()"/>
+                    </f:facet>
+                    <p:outputPanel id="dialogData">
+                        <p:dataTable var="user" rows="5" widgetVar="userDatatable"
+                                     value="#{categoryView.selectedUsers}"
+                                     paginator="true"
+                                     paginatorAlwaysVisible="false"
+                                     paginatorPosition="bottom"
+                                     globalFilterOnly="true">
+                            <f:facet name="header">
+                                <div class="flex align-items-center justify-content-between">
+                                    <p:inputText id="globalFilter" onkeyup="PF('userDatatable').filter()"
+                                                 placeholder="Enter any part of name or email"/>
+                                </div>
+
+                            </f:facet>
+                            <p:column headerText="Name" filterBy="#{user.name}" filterMatchMode="contains">
+                                <h:outputText value="#{user.name}" />
+                            </p:column>
+                            <p:column headerText="Email" filterBy="#{user.email}" filterMatchMode="contains">
+                                <h:outputText value="#{user.email}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </p:dialog>
+            </h:form>
+        </p:outputPanel>
+    </ui:define>
+</ui:composition>

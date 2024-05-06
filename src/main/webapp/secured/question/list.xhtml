@@ -1,0 +1,44 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/layout/page-template.xhtml">
+    <ui:define name="content-title">
+        Question List
+    </ui:define>
+    <f:metadata>
+        <f:viewParam name="categoryId" value="#{questionView.categoryId}"/>
+        <f:viewParam name="listFor" value="#{questionView.listFor}"/>
+        <f:viewAction action="#{questionView.onLoadQuestionList}"/>
+    </f:metadata>
+    <ui:define name="page-content">
+        <h:form>
+            <p:outputPanel styleClass="flex flex-row justify-content-between align-items-start mb-3">
+                <p:outputPanel>
+                    <p:outputPanel styleClass="text-xl mb-1">Category: #{questionView.category.name}</p:outputPanel>
+                    <p:outputPanel styleClass="text-gray-600">#{questionView.category.description}</p:outputPanel>
+                </p:outputPanel>
+                <p:linkButton outcome="/secured/question/form"
+                              value="Add Question"
+                              rendered="#{questionView.listForContributor}">
+                    <f:param name="categoryId" value="#{questionView.categoryId}"/>
+                </p:linkButton>
+            </p:outputPanel>
+        <p:outputPanel>
+            <p:tabView id="questionTab" effect="fade" effectDuration="fast">
+                <p:ajax event="tabChange" listener="#{questionView.onTabChange}" update="questionTab"/>
+                <p:tab id="#{ApprovalStatus.UNDECIDED}" title="Undecided">
+                    <ui:include src="/WEB-INF/template/question-list.xhtml"/>
+                </p:tab>
+                <p:tab id="#{ApprovalStatus.APPROVED}" title="Approved" >
+                    <ui:include src="/WEB-INF/template/question-list.xhtml"/>
+                </p:tab>
+                <p:tab id="#{ApprovalStatus.DISAPPROVED}" title="Disapproved">
+                    <ui:include src="/WEB-INF/template/question-list.xhtml"/>
+                </p:tab>
+            </p:tabView>
+        </p:outputPanel>
+        </h:form>
+    </ui:define>
+</ui:composition>

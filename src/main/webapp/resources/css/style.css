@@ -1,0 +1,23 @@
+html, body {
+    min-height:100vh;
+}
+body a {
+    text-decoration: none !important;
+}
+.ui-outputlabel .ui-outputlabel-rfi {
+    color: var(--red-500);
+}
+.field {
+    margin-bottom: 1.5rem;
+}
+.field:last-child {
+    margin-bottom: 0;
+}
+.field .field-error {
+    color: var(--red-500);
+}
+
+#sidebar {
+    width:300px;
+    height: 100%;
+}

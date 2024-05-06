@@ -1,0 +1,49 @@
+version: '3.1'
+services:
+  db:
+    image: postgres:latest
+    container_name: qb-database
+    ports:
+      - "5432:5432"
+    networks:
+      - subnetwork
+    volumes:
+      - .pgdata:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U question_bank"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+  web-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: application
+    ports:
+      - "8080:8080"
+      - "4848:4848"
+    environment:
+      - GLASSFISH_ADMIN_PASSWORD=${GLASSFISH_ADMIN_PASSWORD}
+      - APPLICATION_CONTEXT_ROOT=${APPLICATION_CONTEXT_ROOT}
+      - DB_HOST=${POSTGRES_HOST}
+      - DB_PORT=${POSTGRES_PORT}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB}
+    volumes:
+      - /tmp/qb/logs:/tmp/logs
+      - /tmp/qb/logs/server:/opt/glassfish7/glassfish/domains/domain1/logs
+    networks:
+      - subnetwork
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+networks:
+  subnetwork:

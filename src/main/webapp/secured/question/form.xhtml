@@ -1,0 +1,91 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/layout/page-template.xhtml">
+    <ui:define name="content-title">#{questionView.question.id > 0 ? 'Update' : 'Create New '} Question</ui:define>
+    <f:metadata>
+        <f:viewParam name="questionId" value="#{questionView.questionId}"/>
+        <f:viewParam name="categoryId" value="#{questionView.categoryId}"/>
+        <f:viewAction action="#{questionView.loadQuestionForm()}"/>
+    </f:metadata>
+
+    <ui:define name="page-content">
+        <p:outputPanel>
+            <h:form id="questionForm">
+                <p:card>
+                    <div class="field">
+                        <p:outputLabel for="problem" styleClass="block font-bold text-xl">Problem</p:outputLabel>
+                        <p:textEditor id="problem" secure="false" widgetVar="problem" value="#{questionView.question.problem}" height="200px" placeholder="Enter the problem">
+                            <f:facet name="toolbar">
+                                <span class="ql-formats">
+                                    <button class="ql-bold" />
+                                    <button class="ql-italic" />
+                                    <button class="ql-underline" />
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-script" value="sub" />
+                                    <button class="ql-script" value="super" />
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-blockquote" />
+                                    <button class="ql-code-block" />
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered" />
+                                    <button class="ql-list" value="bullet" />
+                                </span>
+                            </f:facet>
+                        </p:textEditor>
+                        <h:message for="problem" styleClass="block field-error"/>
+                    </div>
+                    <div class="field">
+                        <p:outputLabel for="solution" styleClass="block text-xl font-bold">Solution</p:outputLabel>
+                        <p:textEditor id="solution" secure="false" widgetVar="solution" value="#{questionView.question.solution}" height="200px" placeholder="Enter the solution">
+                            <f:facet name="toolbar">
+                                <span class="ql-formats">
+                                    <button class="ql-bold" />
+                                    <button class="ql-italic" />
+                                    <button class="ql-underline" />
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-script" value="sub" />
+                                    <button class="ql-script" value="super" />
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-blockquote" />
+                                    <button class="ql-code-block" />
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered" />
+                                    <button class="ql-list" value="bullet" />
+                                </span>
+                            </f:facet>
+                        </p:textEditor>
+                        <h:message for="solution" styleClass="block field-error"/>
+                    </div>
+                    <div class="field">
+                        <p:outputLabel for="level" styleClass="block text-xl font-bold">Level</p:outputLabel>
+                        <p:selectOneButton id="level" value="#{questionView.question.level}">
+                            <f:selectItem itemLabel="Expert" itemValue="#{Level.EXPERT}"/>
+                            <f:selectItem itemLabel="Senior" itemValue="#{Level.SENIOR}"/>
+                            <f:selectItem itemLabel="Beginner" itemValue="#{Level.BEGINNER}"/>
+                        </p:selectOneButton>
+                    </div>
+                </p:card>
+                <p:outputPanel styleClass="mt-3 flex flex-row justify-content-between">
+                    <div>
+                        <p:commandButton styleClass="ui-button-outlined ui-button-secondary" value="Cancel" ajax="false"/>
+                    </div>
+                    <div>
+                        <p:commandButton value="#{questionView.question.id > 0 ? 'Update' : 'Save'}"
+                                         ajax="false"
+                                         action="#{questionView.submit()}"
+                                         update="pageTitle questionForm:actions growl"/>
+                    </div>
+                </p:outputPanel>
+            </h:form>
+        </p:outputPanel>
+    </ui:define>
+</ui:composition>

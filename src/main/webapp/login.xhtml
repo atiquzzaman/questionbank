@@ -1,0 +1,25 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/layout/base-template.xhtml">
+    <ui:define name="content">
+        <h:form id="loginForm">
+                <p:panel id="loginPnl" header="Login"
+                         style="width: 350px; margin: 0 auto;">
+                    <p:growl id="growl" showDetail="true" life="4000" />
+                    <h:panelGrid id="loginPanel" columns="2" cellpadding="5">
+                        <p:outputLabel indicateRequired="false" value="Email" />
+                        <p:inputText id="email" value="#{loginView.email}"/>
+                        <p:spacer /><p:spacer />
+                        <p:outputLabel indicateRequired="false" value="Password" />
+                        <p:password id="password" value="#{loginView.password}"
+                                    feedback="false"/>
+                        <p:commandButton id="loginButton" action="#{loginView.login()}"
+                                         value="Login" update="loginForm" ajax="false"/>
+                    </h:panelGrid>
+                </p:panel>
+            </h:form>
+    </ui:define>
+</ui:composition>

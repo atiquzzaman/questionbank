@@ -1,0 +1,52 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="/WEB-INF/layout/page-template.xhtml">
+    <ui:define name="content-title">User List</ui:define>
+    <f:metadata>
+        <f:viewAction action="#{userView.loadUserLazyData()}"/>
+    </f:metadata>
+    <ui:define name="page-content">
+        <p:outputPanel>
+            <h:form id="grid">
+                <p:card>
+                    <p:dataTable var="user" lazy="true"
+                                 value="#{userView.lazyDataModel}"
+                                 rows="15"
+                                 paginator="true"
+                                 paginatorAlwaysVisible="false"
+                                 paginatorPosition="bottom"
+                                 emptyMessage="No user found"
+                                 multiViewState="true">
+                        <p:column headerText="Name" sortBy="#{user.name}">
+                            <h:outputText value="#{user.name}" />
+                        </p:column>
+
+                        <p:column headerText="Email">
+                            <h:outputText value="#{user.email}" />
+                        </p:column>
+
+                        <p:column headerText="User Type" width="100">
+                            <h:outputText value="#{user.type}" />
+                        </p:column>
+
+                        <p:column width="100">
+                            <p:chip label="Active" styleClass="font-medium text-xs bg-green-600 text-white"
+                                    rendered="#{user.active}"/>
+                            <p:chip label="Inactive" styleClass="font-medium text-xs bg-red-600 text-white"
+                                    rendered="#{!user.active}"/>
+                        </p:column>
+
+                        <p:column width="100">
+                            <p:linkButton outcome="/secured/user/form" value="Edit" styleClass="ui-button-flat">
+                                <f:param name="userId" value="#{user.id}"/>
+                            </p:linkButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:card>
+            </h:form>
+        </p:outputPanel>
+    </ui:define>
+</ui:composition>
