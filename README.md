@@ -13,6 +13,8 @@ A simple web based project manages categorised questions and approval processes.
 
 ## How to deploy
 ```shell
+mkdir -p /tmp/qb/logs/server
+mkdir .pgdata
 docker compose --env-file docker/default.env up --build 
 ```
 
