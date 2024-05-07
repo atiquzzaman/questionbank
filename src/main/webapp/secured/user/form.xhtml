@@ -34,7 +34,8 @@
                 </p:card>
                 <p:outputPanel id="actions" styleClass="mt-3 flex flex-row justify-content-between">
                     <div>
-                        <p:commandButton styleClass="ui-button-outlined ui-button-secondary" value="Cancel" ajax="false"/>
+                        <p:linkButton styleClass="ui-button-outlined ui-button-secondary" value="Cancel"
+                                      outcome="/secured/user/list"/>
                     </div>
                     <div class="flex gap-2">
                         <p:commandButton styleClass="#{userView.user.active ? 'ui-button-danger' : 'ui-button-secondary'}"

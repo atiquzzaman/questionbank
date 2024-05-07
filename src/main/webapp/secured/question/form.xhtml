@@ -74,9 +74,13 @@
                         </p:selectOneButton>
                     </div>
                 </p:card>
-                <p:outputPanel styleClass="mt-3 flex flex-row justify-content-between">
+                <p:outputPanel id="actions" styleClass="mt-3 flex flex-row justify-content-between">
                     <div>
-                        <p:commandButton styleClass="ui-button-outlined ui-button-secondary" value="Cancel" ajax="false"/>
+                        <p:linkButton styleClass="ui-button-outlined ui-button-secondary" value="Cancel"
+                                      outcome="/secured/question/list">
+                            <f:param name="categoryId" value="#{questionView.question.category.id}"/>
+                            <f:param name="listFor" value="#{ListFor.CONTRIBUTOR}"/>
+                        </p:linkButton>
                     </div>
                     <div>
                         <p:commandButton value="#{questionView.question.id > 0 ? 'Update' : 'Save'}"
