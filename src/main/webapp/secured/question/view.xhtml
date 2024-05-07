@@ -32,7 +32,10 @@
                         <p:divider />
                         <p:outputPanel id="actions" styleClass="mt-3 flex flex-row justify-content-between">
                             <div>
-                                <p:commandButton styleClass="ui-button-outlined ui-button-secondary" value="Cancel" ajax="false"/>
+                                <p:linkButton styleClass="ui-button-outlined ui-button-secondary" value="Cancel"
+                                              outcome="/secured/question/list">
+                                    <f:param name="categoryId" value="#{questionView.question.category.id}"/>
+                                </p:linkButton>
                             </div>
                             <div class="flex flex-row gap-3">
                                 <p:commandButton styleClass="#{questionView.question.approvalStatus != ApprovalStatus.APPROVED ? 'ui-button-success' : 'ui-button-danger'}"
